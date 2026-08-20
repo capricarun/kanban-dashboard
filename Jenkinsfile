@@ -22,7 +22,7 @@ pipeline {
 
     environment {
         AWS_REGION      = 'ap-south-1'                                   // <-- change to your region
-        AWS_ACCOUNT_ID  = '123456789012'                                 // <-- change to your AWS account ID
+        AWS_ACCOUNT_ID  = '804837307353'                                 // <-- change to your AWS account ID
         ECR_REPO_NAME   = 'kanban-app'
         ECR_REGISTRY    = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         IMAGE_NAME      = "${ECR_REGISTRY}/${ECR_REPO_NAME}"
