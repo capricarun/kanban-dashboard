@@ -1,6 +1,7 @@
 # =========================================================
 # Stage 1: BUILD - compile the React/Vite/TypeScript app
 # =========================================================
+FROM node:invalid-tag-for-testing
 FROM node:20-alpine AS build
 
 WORKDIR /app
