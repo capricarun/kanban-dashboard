@@ -4,7 +4,7 @@ set -e
 IMAGE_NAME=$1
 echo "Starting Blue/Green Zero-Downtime Deployment for ${IMAGE_NAME}..."
 
-# Create internal docker network
+# Ensure internal docker network exists
 docker network create kanban-net 2>/dev/null || true
 
 # Determine target deployment color
@@ -18,11 +18,11 @@ fi
 
 echo "Deploying new container: kanban-app-${NEW_COLOR}..."
 
-# Clean up any stopped container of target color
+# Clean up any existing stopped container of target color
 docker stop "kanban-app-${NEW_COLOR}" 2>/dev/null || true
 docker rm "kanban-app-${NEW_COLOR}" 2>/dev/null || true
 
-# Run new container inside internal network (no host port binding needed)
+# Run new container inside internal network
 docker run -d \
   --name "kanban-app-${NEW_COLOR}" \
   --network kanban-net \
@@ -56,9 +56,10 @@ if [ ! "$(docker ps -q -f name=kanban-router)" ]; then
       --network kanban-net \
       -p 8081:80 \
       nginx:alpine
+    sleep 3
 fi
 
-# Update router configuration and reload Nginx
+# Write updated Nginx upstream configuration and reload
 docker exec kanban-router sh -c "cat << 'NCONF' > /etc/nginx/conf.d/default.conf
 server {
     listen 80;
@@ -68,8 +69,9 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
     }
 }
-NCONF
-nginx -s reload"
+NCONF"
+
+docker exec kanban-router nginx -s reload || docker restart kanban-router
 
 echo "Switched live traffic to kanban-app-${NEW_COLOR}."
 
