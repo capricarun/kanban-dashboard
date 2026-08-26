@@ -33,3 +33,4 @@ export default function App() {
 }
 // Webhook test
 // Blue-green deploy test
+// CI/CD blue-green deployment test
